@@ -1,8 +1,12 @@
-'''
+"""
 Agile Scrum Pokerbot for Slack
 
 Hosted on AWS Lambda.
-'''
+
+:Author: Nate Yolles <yolles@adobe.com>
+:Homepage: https://github.com/nateyolles/slack-pokerbot
+"""
+
 import boto3
 import logging
 from urlparse import parse_qs
