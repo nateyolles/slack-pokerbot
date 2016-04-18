@@ -133,7 +133,7 @@ def lambda_handler(event, context):
             message = Message('*No winner yet.* Discuss and continue voting.')
 
             for vote in votes:
-                message.add_attachment(", ".join(votes[vote]), 'warning', VALID_VOTES[vote], true)
+                message.add_attachment(", ".join(votes[vote]), 'warning', VALID_VOTES[vote], True)
 
             return message.get_message()
     elif sub_command == 'help':
