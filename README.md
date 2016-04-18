@@ -2,7 +2,7 @@
 
 Pokerbot is a [Slash Command](https://api.slack.com/slash-commands) for [Slack](https://slack.com/). It's easily hosted on [Amazon Web Services' Lambda](https://aws.amazon.com/lambda/).
 
-![Screenshot of Pokerbot in Slack](https://github.com/nateyolles/slack-pokerbot/images/screenshot.png)
+![Screenshot of Pokerbot in Slack](https://raw.githubusercontent.com/nateyolles/slack-pokerbot/master/images/screenshot.png)
 
 ## Configure Slack Slash Command
 
