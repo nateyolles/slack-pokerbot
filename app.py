@@ -58,12 +58,12 @@ def lambda_handler(event, context):
     }
 
     if post_data['text'] == None:
-        return 'Type */pokerbot help* for pokerbot commands.'
+        return send_ephemeral('Type */pokerbot help* for pokerbot commands.')
 
     command_arguments = post_data['text'].split(' ')
     sub_command = command_arguments[0]
 
-    if sub_command == 'start':
+    if sub_command == 'deal':
         if post_data['team_id'] not in poker_data.keys():
             poker_data[post_data['team_id']] = {}
 
@@ -76,10 +76,10 @@ def lambda_handler(event, context):
 
     elif sub_command == 'vote':
         if post_data['channel_id'] not in poker_data[post_data['team_id']].keys():
-            return "The poker planning game hasn't started yet."
+            return send_ephemeral("The poker planning game hasn't started yet.")
 
         if len(command_arguments) < 2:
-            return "Your vote was not counted. You didn't enter a number."
+            return send_ephemeral("Your vote was not counted. You didn't enter a number.")
 
         vote_sub_command = command_arguments[1]
         vote = None
@@ -87,24 +87,24 @@ def lambda_handler(event, context):
         try:
             vote = int(vote_sub_command)
         except ValueError:
-            return "Your vote was not counted. Please enter a number."
+            return send_ephemeral("Your vote was not counted. Please enter a number.")
 
         if vote not in VALID_VOTES:
-            return "Your vote was not counted. Please enter a valid poker planning number."
+            return send_ephemeral("Your vote was not counted. Please enter a valid poker planning number.")
 
         already_voted = poker_data[post_data['team_id']][post_data['channel_id']].has_key(post_data['user_id'])
 
         poker_data[post_data['team_id']][post_data['channel_id']][post_data['user_id']] = vote
 
         if already_voted:
-            return "You changed your vote to *%d*." % (vote)
+            return send_ephemeral("You changed your vote to *%d*." % (vote))
         else:
-            return "You voted *%d*." % (vote)
+            return send_ephemeral("You voted *%d*." % (vote))
 
-    elif sub_command == 'end':
+    elif sub_command == 'flip':
         if (post_data['team_id'] not in poker_data.keys() or
                 post_data['channel_id'] not in poker_data[post_data['team_id']].keys()):
-            return "The poker planning game hasn't started yet."
+            return send_ephemeral("The poker planning game hasn't started yet.")
 
         votes = {}
 
@@ -133,10 +133,24 @@ def lambda_handler(event, context):
 
             return message.get_message()
     elif sub_command == 'help':
-        return 'TODO: help'
-    else:
-        return 'Invalid command. Type */pokerbot help* for pokerbot commands.'
+        return send_ephemeral('Pokerbot helps you play Agile/Scrum poker planning.\n\n' +
+                              'Use the following commands:\n' +
+                              ' /pokerbot deal\n' +
+                              ' /pokerbot vote ' + str(sorted(VALID_VOTES.keys())) + '\n' +
+                              ' /pokerbot flip')
 
+    else:
+        return send_ephemeral('Invalid command. Type */pokerbot help* for pokerbot commands.')
+
+def send_ephemeral(text):
+    """Send private response to user initiating action
+
+    :param text: text in the message
+    """
+    message = {}
+    message['text'] = text
+
+    return message
 
 class Message():
     """Public Slack message
