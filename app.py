@@ -16,7 +16,6 @@ import urllib2
 # Start Configuration
 SLACK_TOKENS = ('<insert your Slack token>', '<additional Slack token>')
 IMAGE_LOCATION = '<insert your image path> (e.g. http://www.my-site.com/images/)'
-
 COMPOSITE_IMAGE = IMAGE_LOCATION + 'composite.png'
 VALID_VOTES = {
     0 : IMAGE_LOCATION + '0.png',
@@ -101,7 +100,10 @@ def lambda_handler(event, context):
 
         already_voted = poker_data[post_data['team_id']][post_data['channel_id']].has_key(post_data['user_id'])
 
-        poker_data[post_data['team_id']][post_data['channel_id']][post_data['user_id']] = vote
+        poker_data[post_data['team_id']][post_data['channel_id']][post_data['user_id']] = {
+            'vote' : vote,
+            'name' : post_data['user_name']
+        }
 
         if already_voted:
             return create_ephemeral("You changed your vote to *%d*." % (vote))
@@ -119,12 +121,13 @@ def lambda_handler(event, context):
         votes = {}
 
         for player in poker_data[post_data['team_id']][post_data['channel_id']]:
-            player_vote = poker_data[post_data['team_id']][post_data['channel_id']][player]
+            player_vote = poker_data[post_data['team_id']][post_data['channel_id']][player]['vote']
+            player_name = poker_data[post_data['team_id']][post_data['channel_id']][player]['name']
 
             if not votes.has_key(player_vote):
                 votes[player_vote] = []
 
-            votes[player_vote].append(player)
+            votes[player_vote].append(player_name)
 
         # reset the game by deleting the current channel's data
         del poker_data[post_data['team_id']][post_data['channel_id']]
