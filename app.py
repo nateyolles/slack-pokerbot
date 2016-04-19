@@ -14,7 +14,7 @@ import json
 import urllib2
 
 # Start Configuration
-SLACK_TOKEN = '<insert your Slack token>'
+SLACK_TOKENS = ('<insert your Slack token>', '<additional Slack token>')
 IMAGE_LOCATION = '<insert your image path> (e.g. http://www.my-site.com/images/)'
 
 COMPOSITE_IMAGE = IMAGE_LOCATION + 'composite.png'
@@ -47,7 +47,7 @@ def lambda_handler(event, context):
     params = parse_qs(req_body)
     token = params['token'][0]
 
-    if token != SLACK_TOKEN:
+    if token not in SLACK_TOKEN:
         logger.error("Request token (%s) does not match expected.", token)
         raise Exception("Invalid request token")
 
