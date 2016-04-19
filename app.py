@@ -10,6 +10,8 @@ Hosted on AWS Lambda.
 import boto3
 import logging
 from urlparse import parse_qs
+import json
+import urllib2
 
 # Start Configuration
 SLACK_TOKEN = '<insert your Slack token>'
@@ -62,7 +64,7 @@ def lambda_handler(event, context):
     }
 
     if post_data['text'] == None:
-        return send_ephemeral('Type */pokerbot help* for pokerbot commands.')
+        return create_ephemeral('Type */pokerbot help* for pokerbot commands.')
 
     command_arguments = post_data['text'].split(' ')
     sub_command = command_arguments[0]
@@ -80,10 +82,10 @@ def lambda_handler(event, context):
 
     elif sub_command == 'vote':
         if post_data['channel_id'] not in poker_data[post_data['team_id']].keys():
-            return send_ephemeral("The poker planning game hasn't started yet.")
+            return create_ephemeral("The poker planning game hasn't started yet.")
 
         if len(command_arguments) < 2:
-            return send_ephemeral("Your vote was not counted. You didn't enter a number.")
+            return create_ephemeral("Your vote was not counted. You didn't enter a number.")
 
         vote_sub_command = command_arguments[1]
         vote = None
@@ -91,24 +93,27 @@ def lambda_handler(event, context):
         try:
             vote = int(vote_sub_command)
         except ValueError:
-            return send_ephemeral("Your vote was not counted. Please enter a number.")
+            return create_ephemeral("Your vote was not counted. Please enter a number.")
 
         if vote not in VALID_VOTES:
-            return send_ephemeral("Your vote was not counted. Please enter a valid poker planning number.")
+            return create_ephemeral("Your vote was not counted. Please enter a valid poker planning number.")
 
         already_voted = poker_data[post_data['team_id']][post_data['channel_id']].has_key(post_data['user_id'])
 
         poker_data[post_data['team_id']][post_data['channel_id']][post_data['user_id']] = vote
 
         if already_voted:
-            return send_ephemeral("You changed your vote to *%d*." % (vote))
+            return create_ephemeral("You changed your vote to *%d*." % (vote))
         else:
-            return send_ephemeral("You voted *%d*." % (vote))
+            message = Message('%s voted' % (post_data['user_name']))
+            send_delayed_message(post_data['response_url'], message)
+
+            return create_ephemeral("You voted *%d*." % (vote))
 
     elif sub_command == 'flip':
         if (post_data['team_id'] not in poker_data.keys() or
                 post_data['channel_id'] not in poker_data[post_data['team_id']].keys()):
-            return send_ephemeral("The poker planning game hasn't started yet.")
+            return create_ephemeral("The poker planning game hasn't started yet.")
 
         votes = {}
 
@@ -137,16 +142,16 @@ def lambda_handler(event, context):
 
             return message.get_message()
     elif sub_command == 'help':
-        return send_ephemeral('Pokerbot helps you play Agile/Scrum poker planning.\n\n' +
+        return create_ephemeral('Pokerbot helps you play Agile/Scrum poker planning.\n\n' +
                               'Use the following commands:\n' +
                               ' /pokerbot deal\n' +
                               ' /pokerbot vote ' + str(sorted(VALID_VOTES.keys())) + '\n' +
                               ' /pokerbot flip')
 
     else:
-        return send_ephemeral('Invalid command. Type */pokerbot help* for pokerbot commands.')
+        return create_ephemeral('Invalid command. Type */pokerbot help* for pokerbot commands.')
 
-def send_ephemeral(text):
+def create_ephemeral(text):
     """Send private response to user initiating action
 
     :param text: text in the message
@@ -155,6 +160,20 @@ def send_ephemeral(text):
     message['text'] = text
 
     return message
+
+def send_delayed_message(url, message):
+    """Send a delayed in_channel message.
+
+    You can send up to 5 messages per user command.
+    """
+
+    req = urllib2.Request(url)
+    req.add_header('Content-Type', 'application/json')
+
+    try:
+        response = urllib2.urlopen(req, json.dumps(message.get_message()))
+    except urllib2.URLError:
+        logger.error("Could not send delayed message to %s", url)
 
 class Message():
     """Public Slack message
