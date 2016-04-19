@@ -15,7 +15,7 @@ Pokerbot is a [Slash Command](https://api.slack.com/slash-commands) for [Slack](
 7. Customize Icon if you wish
 8. Check "Show this command in the autocomplete list"
 9. Set Description to "Play Scrum planning poker"
-10. Set Usage hint to '"deal", "vote [0, 1, 2, 3, 5, 8, 13, 20]", "reveal"'
+10. Set Usage hint to '"deal", "vote [0, 1, 2, 3, 5, 8, 13, 20]", "tally", "reveal"'
 11. Copy the Token
 
 ## Configure
@@ -31,4 +31,5 @@ Follow instructions from Amazon Web Services Lambda. Paste the app.py file into 
 ## Play Poker Planning
 1. Type "/pokerbot deal" in a channel
 2. Everyone votes by typing "/pokerbot vote <your vote>"
-3. Type "/pokerbot reveal" in the channel to reveal the results
+3. Type "/pokerbot tally" in the channel to show the names of those who have voted
+4. Type "/pokerbot reveal" in the channel to reveal the voting results
