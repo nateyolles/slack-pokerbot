@@ -15,7 +15,7 @@ Pokerbot is a [Slash Command](https://api.slack.com/slash-commands) for [Slack](
 7. Customize Icon if you wish
 8. Check "Show this command in the autocomplete list"
 9. Set Description to "Play Scrum planning poker"
-10. Set Usage hint to '"deal", "vote [0, 1, 2, 3, 5, 8, 13, 20]", "tally", "reveal"'
+10. Set Usage Hint to "help [or deal, vote <number>, tally, reveal]""
 11. Copy the Token
 
 ## Configure
