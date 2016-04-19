@@ -113,7 +113,7 @@ def lambda_handler(event, context):
 
             return create_ephemeral("You voted *%d*." % (vote))
 
-    elif sub_command == 'flip':
+    elif sub_command == 'reveal':
         if (post_data['team_id'] not in poker_data.keys() or
                 post_data['channel_id'] not in poker_data[post_data['team_id']].keys()):
             return create_ephemeral("The poker planning game hasn't started yet.")
@@ -151,7 +151,7 @@ def lambda_handler(event, context):
                               'Use the following commands:\n' +
                               ' /pokerbot deal\n' +
                               ' /pokerbot vote ' + str(sorted(VALID_VOTES.keys())) + '\n' +
-                              ' /pokerbot flip')
+                              ' /pokerbot reveal')
 
     else:
         return create_ephemeral('Invalid command. Type */pokerbot help* for pokerbot commands.')
