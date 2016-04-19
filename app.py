@@ -81,7 +81,8 @@ def lambda_handler(event, context):
         return message.get_message()
 
     elif sub_command == 'vote':
-        if post_data['channel_id'] not in poker_data[post_data['team_id']].keys():
+        if (post_data['team_id'] not in poker_data.keys() or
+                post_data['channel_id'] not in poker_data[post_data['team_id']].keys()):
             return create_ephemeral("The poker planning game hasn't started yet.")
 
         if len(command_arguments) < 2:
@@ -125,7 +126,8 @@ def lambda_handler(event, context):
 
             votes[player_vote].append(player)
 
-        poker_data[post_data['team_id']][post_data['channel_id']].clear()
+        # reset the game by deleting the current channel's data
+        del poker_data[post_data['team_id']][post_data['channel_id']]
 
         vote_set = set(votes.keys())
 
