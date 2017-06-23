@@ -46,7 +46,7 @@ def lambda_handler(event, context):
     params = parse_qs(req_body)
     token = params['token'][0]
 
-    if token not in SLACK_TOKEN:
+    if token not in SLACK_TOKENS:
         logger.error("Request token (%s) does not match expected.", token)
         raise Exception("Invalid request token")
 
