@@ -26,7 +26,17 @@ Pokerbot is a [Slash Command](https://api.slack.com/slash-commands) for [Slack](
 
 ## AWS Lambda
 
-Follow instructions from Amazon Web Services Lambda. Paste the app.py file into the web editor or upload as directed by AWS.
+1. Create a AWS Lambda; following the instructions from Amazon
+2. Paste the _app.py_ file into the web editor or upload as directed by AWS
+3. Afterwards adjust the _Integration Mapping_ of your API Gateway that is triggering the Lambda function
+
+    3.1 Add a mapping for `application/x-www-form-urlencoded`
+    
+    3.2 Paste the snippet below into the provided template
+    ```
+    {"body" : $input.json('$')}
+    ```
+> :exclamation: Do not forget to deploy your API after changing the integration mapping
 
 ## Play Poker Planning
 1. Type "/pokerbot deal" in a channel
